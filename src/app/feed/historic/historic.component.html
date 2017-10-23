@@ -1,0 +1,72 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="row">
+        <div class="col-md-12">
+          <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+            <div class="card-content">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group label-floating">
+                    <angular2-multiselect class="form-control" [formControl]="exchange" [data]="exchangeOptions" [(ngModel)]="exchangeSelectedItems"
+                      [settings]="exchangeDropdownSettings" (onSelect)="onExchangeItemSelect($event)"></angular2-multiselect>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group label-floating">
+                    <angular2-multiselect class="form-control" [formControl]="symbol" [data]="symbolOptions" [(ngModel)]="symbolSelectedItems"
+                      [settings]="symbolDropdownSettings"></angular2-multiselect>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <md-form-field>
+                      <input mdInput [mdDatepicker]="startDatePicker" [formControl]="histStartDate" placeholder="Choose a start date">
+                      <md-datepicker-toggle mdSuffix [for]="startDatePicker"></md-datepicker-toggle>
+                      <md-datepicker #startDatePicker></md-datepicker>
+                    </md-form-field>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <md-form-field>
+                      <input mdInput [mdDatepicker]="endDatePicker" [formControl]="histEndDate" placeholder="Choose a end date">
+                      <md-datepicker-toggle mdSuffix [for]="endDatePicker"></md-datepicker-toggle>
+                      <md-datepicker #endDatePicker></md-datepicker>
+                    </md-form-field>
+                  </div>
+                </div>
+              </div>
+              <button [disabled]="!form.valid" type="submit" class="btn btn-fill btn-rose">Filter</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header card-header-icon" data-background-color="rose">
+        <i class="material-icons">apps</i>
+      </div>
+      <div class="card-content">
+        <h4 class="card-title">Historic Data</h4>
+        <div class="row">
+          <div class="col-md-12">
+              <ngx-datatable
+              class="material"
+              [rows]="tradeGridData"
+              [columns]="tradeGridCols"
+              [columnMode]="'force'"
+              [headerHeight]="50"
+              [footerHeight]="50"
+              [rowHeight]="'auto'"
+              [limit]="10">
+            </ngx-datatable>
+          </div>
+        </div>
+       
+      </div>
+    </div>
+  </div>
+</div>
