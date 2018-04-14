@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common'
 import { FormGroup, AbstractControl, FormBuilder, Validators } from '@angular/forms';
+import { Daterangepicker, DaterangepickerConfig } from 'ng2-daterangepicker';
+import { GridOptions } from 'ag-grid';
 
 import * as moment from 'moment';
 
-import { HistoricService } from './historic.service';
+import { FeedService } from '../feed.service';
 
 declare const require: any;
 
@@ -17,11 +19,17 @@ declare const $: any;
 })
 export class HistoricComponent implements OnInit {
 
-  public form: FormGroup;
-  public symbol: AbstractControl;
-  public exchange: AbstractControl;
-  public histStartDate: AbstractControl;
-  public histEndDate: AbstractControl;
+  private form: FormGroup;
+  private symbol: AbstractControl;
+  private exchange: AbstractControl;
+  private dateRangeObj: any;
+
+  private mainInput = {
+    start: moment().subtract(12, 'month'),
+    end: moment().subtract(6, 'month')
+  }
+
+  private historicGridOptions: GridOptions;
 
   private symbolOptions = [];
   private symbolDropdownSettings = {};
@@ -31,54 +39,50 @@ export class HistoricComponent implements OnInit {
   private exchangeDropdownSettings = {};
   private exchangeSelectionItems = [];
 
-  private tradeGridData: any[];
-  private tradeGridCols: any[];
-
-  private params: any;
-
   constructor(
-    fb: FormBuilder, 
-    private hs: HistoricService,
-    public datePipe: DatePipe) {
+    fb: FormBuilder,
+    private hs: FeedService,
+    public datePipe: DatePipe,
+    private daterangepickerOptions: DaterangepickerConfig) {
     this.form = fb.group({
       'symbol': ['', Validators.compose([Validators.required])],
-      'exchange': ['', Validators.compose([Validators.required])],
-      'histStartDate': [null, Validators.compose([Validators.required])],
-      'histEndDate': [null, Validators.compose([Validators.required])]
+      'exchange': ['', Validators.compose([Validators.required])]
     });
 
     this.symbol = this.form.controls['symbol'];
     this.exchange = this.form.controls['exchange'];
-    this.histStartDate = this.form.controls['histStartDate'];
-    this.histEndDate = this.form.controls['histEndDate'];
 
-    this.symbolDropdownSettings = { 
-      singleSelection: false, 
-      text:"Select Symbols",
-      selectAllText:'Select All',
-      unSelectAllText:'UnSelect All',
+    this.symbolDropdownSettings = {
+      singleSelection: false,
+      text: "Select Symbols",
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
       badgeShowLimit: 3,
       enableSearchFilter: true
     };
 
-    this.exchangeDropdownSettings = { 
-      singleSelection: true, 
-      text:"Select Exchange",
+    this.exchangeDropdownSettings = {
+      singleSelection: true,
+      text: "Select Exchange",
       enableSearchFilter: true
     };
 
-    this.tradeGridData = [];
-    this.tradeGridCols = this.getTradeGridCols();
-  }
+    this.daterangepickerOptions.settings = {
+      locale: { format: 'YYYY-MM-DD' },
+      alwaysShowCalendars: false,
+      showDropdowns: true
+    };
 
-  agInit(params: any): void {
-    this.params = params;
+    this.historicGridOptions = <GridOptions> {};
+    this.historicGridOptions.columnDefs = this.getTradeGridCols();
+    this.historicGridOptions.pagination = true;
+    this.historicGridOptions.rowData = []; 
   }
 
   ngOnInit() {
     this.hs.fetchAllExchange().subscribe((data) => {
       this.exchangeOptions = [];
-      for(let obj of data.data) {
+      for (let obj of data.data) {
         this.exchangeOptions.push({
           id: obj['ID'],
           itemName: obj['VALUE']
@@ -87,11 +91,11 @@ export class HistoricComponent implements OnInit {
     });
   }
 
-  onExchangeItemSelect(item){
+  onExchangeItemSelect(item) {
     this.hs.fetchDistinctSymbol(item['itemName']).subscribe((data) => {
       this.symbol.reset();
       this.symbolOptions = [];
-      for(let obj of data.data) {
+      for (let obj of data.data) {
         this.symbolOptions.push({
           id: obj['ID'],
           itemName: obj['VALUE']
@@ -102,25 +106,33 @@ export class HistoricComponent implements OnInit {
 
   onSubmit(values: Object) {
 
-    let symbolValueArr = [];
     values['exchange'] = values['exchange'][0].itemName;
-    values['histStartDate'] = this.getFormattedDate(values['histStartDate'], 'yyyy-MM-dd') ;
-    values['histEndDate'] = this.getFormattedDate(values['histEndDate'], 'yyyy-MM-dd');
-
-    for(let symObj of this.symbolSelectedItems) {
-      symbolValueArr.push(symObj['itemName']);
-    }
-    
-    values['symbol'] = symbolValueArr;
+    values['histStartDate'] = this.getFormattedDate(moment(this.dateRangeObj.start).toDate(), 'yyyy-MM-dd');
+    values['histEndDate'] = this.getFormattedDate(moment(this.dateRangeObj.end).toDate(), 'yyyy-MM-dd');
+    values['symbol'] = this.getSymbolArray(this.symbolSelectedItems);
 
     this.hs.fetchHistoricTradeData(values).subscribe(data => {
-      this.tradeGridData = data.data
+      this.historicGridOptions.api.setRowData(data.data);
     });
 
   }
 
+  getSymbolArray(symbolSelectedItems: any) {
+    let symbolValueArr = [];
+    for (let symObj of this.symbolSelectedItems) {
+      symbolValueArr.push(symObj['itemName']);
+    }
+    return symbolValueArr;
+  }
+
   getFormattedDate(date: Date, format: string) {
     return this.datePipe.transform(date, format);
+  }
+
+  private selectedDate(value: any, dateInput: any) {
+    this.mainInput.start = value.start;
+    this.mainInput.end = value.end;
+    this.dateRangeObj = value;
   }
 
   getHistTradeDataKeys(row: Object): Array<string> {
@@ -129,15 +141,15 @@ export class HistoricComponent implements OnInit {
 
   getTradeGridCols() {
     return [
-      { name: 'Symbol', prop: 'SYMBOL' },
-      { name: 'Trade', prop: 'TRADE' },
-      { name: 'Price #1', prop: 'PRICE_1'},
-      { name: 'Date #1', prop: 'DATE_1' },
-      { name: 'Price #2', prop: 'PRICE_2'},
-      { name: 'Date #2', prop: 'DATE_2' },
-      { name: 'Cash Futures', prop: 'CASH_FUTURES' },
-      { name: 'Exchange', prop: 'EXCHANGE' }
-     ];
+      { headerName: 'Symbol', field: 'SYMBOL' },
+      { headerName: 'Trade', field: 'TRADE' },
+      { headerName: 'Price #1', field: 'PRICE_1' },
+      { headerName: 'Date #1', field: 'DATE_1' },
+      { headerName: 'Price #2', field: 'PRICE_2' },
+      { headerName: 'Date #2', field: 'DATE_2' },
+      { headerName: 'Cash Futures', field: 'CASH_FUTURES' },
+      { headerName: 'Exchange', field: 'EXCHANGE' }
+    ];
   }
 
 }

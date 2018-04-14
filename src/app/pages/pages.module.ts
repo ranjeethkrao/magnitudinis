@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MdFormFieldModule, MdSelectModule, MdOptionModule } from '@angular/material';
+import { MatFormFieldModule, MatSelectModule, MatOptionModule } from '@angular/material';
 
 import { environment } from '../../environments/environment';
 
@@ -19,8 +19,8 @@ import { LoginComponent } from './login/login.component';
     AngularMultiSelectModule,
     CommonModule,
     FormsModule,
-    MdSelectModule,
-    MdOptionModule,
+    MatSelectModule,
+    MatOptionModule,
     RouterModule.forChild(PagesRoutes),
     ReactiveFormsModule
   ],

@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 // Get our API routes
 const api = require('./magnitudinis-server/routes/api');
 const auth = require('./magnitudinis-server/routes/auth/auth');
-const histTrade = require('./magnitudinis-server/routes/trade/trade');
+const tradeRoute = require('./magnitudinis-server/routes/trade/trade');
 
 const app = express();
 
@@ -21,7 +21,8 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/api', api.router);
 app.use('/auth', auth.loginRoute);
 app.use('/auth', auth.registerRoute);
-app.use('/historic', histTrade.tradeRoute);
+app.use('/historic', tradeRoute.histTradeRoute);
+app.use('/live', tradeRoute.liveTradeRoute);
 
 // Catch all other routes and return the index file
 app.get('*', (req, res) => {

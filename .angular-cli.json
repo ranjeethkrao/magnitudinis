@@ -24,9 +24,10 @@
         "../src/assets/sass/material-dashboard.scss",
         "../node_modules/perfect-scrollbar/dist/css/perfect-scrollbar.min.css",
         "../node_modules/sweetalert2/dist/sweetalert2.min.css",
-        "../node_modules/@swimlane/ngx-datatable/release/themes/material.css",
         "../node_modules/intl-tel-input/build/css/intlTelInput.css",
-        "styles.css"
+        "styles.css",
+        "../node_modules/ag-grid/dist/styles/ag-grid.css",
+        "../node_modules/ag-grid/dist/styles/theme-dark.css"
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.min.js",

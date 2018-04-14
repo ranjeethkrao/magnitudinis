@@ -31,8 +31,8 @@ export const ROUTES: RouteInfo[] = [{
         type: 'sub',
         icontype: 'timeline',
         children: [
-            {path: 'live', title: 'Live', ab:'L'}
-            // {path: 'historic', title: 'Historic', ab:'H'}
+            {path: 'live', title: 'Live', ab:'L'},
+            {path: 'historic', title: 'Historic', ab:'H'}
         ]
     }
 ];

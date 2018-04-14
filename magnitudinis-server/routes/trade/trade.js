@@ -1,5 +1,8 @@
 const historic = require('./historic/historic-dao');
+const live = require('./live/live-dao');
 
 module.exports = {
-    tradeRoute : historic.router
+    histTradeRoute : historic.router,
+    liveTradeRoute : live.router
+
 } 
