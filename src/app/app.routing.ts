@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AdminLayoutComponent } from './layouts/admin/admin-layout.component';
 import { AuthLayoutComponent } from './layouts/auth/auth-layout.component';
+import { UsersComponent } from './users/users.component';
 
 export const AppRoutes: Routes = [
     {
@@ -28,5 +29,9 @@ export const AppRoutes: Routes = [
         path: '',
         loadChildren: './pages/pages.module#PagesModule'
       }]
-    }
-];
+    },
+    {
+      path: 'users',
+      loadChildren: './users/users.module#UsersModule'
+    
+  }];

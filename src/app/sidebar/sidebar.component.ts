@@ -34,6 +34,11 @@ export const ROUTES: RouteInfo[] = [{
             {path: 'live', title: 'Live', ab:'L'},
             {path: 'historic', title: 'Historic', ab:'H'}
         ]
+    },{
+        path: '/users',
+        title: 'Users',
+        type: 'link',
+        icontype: 'people'
     }
 ];
 @Component({

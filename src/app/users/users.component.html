@@ -1,0 +1,9 @@
+<ag-grid-angular 
+    style="width: 60%; height: 200px;" 
+    class="ag-dark"
+    [gridOptions]="gridOptions"
+    [rowData]="rowData | async"
+    [stopEditingWhenGridLosesFocus]="false"
+    (cellValueChanged)="valueChanged($event)">
+</ag-grid-angular>
+<button class="btn btn-success" (click)="saveData()">Save Data</button>

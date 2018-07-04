@@ -17,6 +17,10 @@ import { AdminLayoutComponent } from './layouts/admin/admin-layout.component';
 import { AuthLayoutComponent } from './layouts/auth/auth-layout.component';
 
 import { AppRoutes } from './app.routing';
+import { UsersComponent } from './users/users.component';
+import { UsersModule } from './users/users.module';
+
+
 
 firebase.initializeApp(environment.firebase);
 
@@ -29,7 +33,8 @@ firebase.initializeApp(environment.firebase);
         HttpModule,
         SidebarModule,
         NavbarModule,
-        FooterModule    
+        FooterModule,
+        UsersModule  
     ],
     declarations: [
         AppComponent,
