@@ -55,36 +55,67 @@ app.get('/gusers', async (req, res) => {
   });
 });
 
+// updateUser() = function () {
+//   var ref = db.ref("users/" + update.uuid);
+//   ref.update({
+//     follows: update.newValue
+//   }).then(() => {
+//     console.log('update success')
+//   }).catch((err) => {
+//     console.log('Error updating ', err);
+//     success = false;
+//     failureCount++;
+//   });
+// }
 
 app.post('/changes', async (req, res) => {
   let success = true;
   let failureCount = 0;
   let updates = req.body.changes;
-  let requests = updates.map((update) => {
-    return new Promise((resolve, reject) => {
-      var ref = db.ref("users/" + update.uuid);
-      return ref.update({
-        follows: update.newValue
-      }).then(() => {
-        console.log('update success')
-        resolve();
-      }).catch((err) => {
-        console.log('Error updating ', err);
-        success = false;
-        failureCount++;
-        reject();
-      });
-    });
+
+  var batch = db.batch();
+  updates.map((update) => {
+    var ref = db.ref("users/" + update.uuid);
+    batch.update(ref, { follows: update.newValue});
   });
   
-
-  Promise.all(requests).then(() =>{
-    console.log('llll')
-  success ? res.send({ code: 0, message: 'Update successful' }) : res.send({ code: -1, message: 'Error updating ' + failureCount + ' records.' })
+  batch.commit().then(()=>{
+    console.log('update success');
+    res.send({ code: 0, message: 'Update successful' });
+  }).catch(err=>{
+    console.log('Error updating ', err);
+    res.send({ code: -1, message: 'Error updating ' + failureCount + ' records.' })
   });
+
+  // let requests = updates.map((update) => {
+  //   return new Promise((resolve, reject) => {
+  //     var ref = db.ref("users/" + update.uuid);
+  //     ref.update({
+  //       follows: update.newValue
+  //     }).then(() => {
+  //       console.log('update success')
+  //       resolve();
+  //     }).catch((err) => {
+  //       console.log('Error updating ', err);
+  //       success = false;
+  //       failureCount++;
+  //       reject();
+  //     });
+  //   });
+  // });
+
+  // console.log(requests.length);
+
+
+  // Promise.all(requests).then(() =>{    
+  //   success ? 
+  //     res.send({ code: 0, message: 'Update successful' }) 
+  //     : 
+  //     res.send({ code: -1, message: 'Error updating ' + failureCount + ' records.' })
+  // });
 });
 
 
-const server = app.listen(3000, function () {
-    console.log('Server started on http://localhost:3000');
-  });
+app.listen(3000, function () {
+  console.log('Server started on http://localhost:3000');
+});

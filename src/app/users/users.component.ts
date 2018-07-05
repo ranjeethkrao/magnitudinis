@@ -15,7 +15,10 @@ export class UsersComponent implements OnInit {
   gridOptions: GridOptions;
   constructor(private http: Http) {
     this.gridOptions = <GridOptions>{
-      columnDefs: this.createColumnDefs()
+      columnDefs: this.createColumnDefs(),
+      onGridSizeChanged: () => {
+        this.gridOptions.api.sizeColumnsToFit();
+      }
     };
   }
 
@@ -31,7 +34,7 @@ export class UsersComponent implements OnInit {
       { headerName: 'First Name', field: 'firstName' },
       { headerName: 'Email', field: 'email' },
       { headerName: 'User ID', field: 'userId' },
-      { headerName: 'Follows', field: 'follows', cellEditorFramework: ComboBoxComponent, editable: true },
+      { headerName: 'Follows', field: 'follows', cellEditorFramework: ComboBoxComponent, editable: true }
     ];
   }
 
@@ -39,11 +42,12 @@ export class UsersComponent implements OnInit {
     if(this.changes.length > 0){
       const headers = new Headers();
       headers.append('Content-Type', 'application/json; charset=utf-8')
-      this.http.post('http://localhost:3000/changes', {changes:this.changes}, {headers: headers}).subscribe((res)=>{
-        if(res['code'] === 0){
+      this.http.post('http://localhost:3000/changes', {changes:this.changes}, {headers: headers}).subscribe(res=>{
+        let response = JSON.parse(res['_body']);
+        if(response['code'] === 0){
           alert('Save successful');
         } else {
-          alert('Error: ' + res['message']);
+          alert('Error: ' + response['message']);
         }
       });
       this.changes = [];

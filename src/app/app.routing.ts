@@ -15,15 +15,16 @@ export const AppRoutes: Routes = [
     component: AdminLayoutComponent,
     children: [
       {
-        path: '',
-        loadChildren: './dashboard/dashboard.module#DashboardModule'
-      }, {
         path: 'users',
         loadChildren: './users/users.module#UsersModule'
       }, {
         path: 'feed',
         loadChildren: './feed/feed.module#FeedModule'
-    }]
+      }, {
+        path: '',
+        loadChildren: './dashboard/dashboard.module#DashboardModule'
+      }
+  ]
   },
   {
     path: '',
