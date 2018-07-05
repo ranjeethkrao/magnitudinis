@@ -20,7 +20,9 @@ export class UsersComponent implements OnInit {
   }
 
    ngOnInit() {
-    this.rowData = this.http.get('http://localhost:3000/gusers');
+    this.http.get('http://localhost:3000/gusers').subscribe(res=>{
+      this.gridOptions.api.setRowData(JSON.parse(res['_body']));
+    });
   }
 
 

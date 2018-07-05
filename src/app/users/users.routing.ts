@@ -2,13 +2,10 @@ import { Routes } from '@angular/router';
 import { UsersComponent } from './users.component';
 
 
-export const UsersRoutes: Routes = [
-    {
-
+export const UsersRoutes: Routes = [{
       path: '',
-      children: [ {
-        path: 'users',
+      children: [{
+        path: '',
         component: UsersComponent
     }]
-}
-];
+}];

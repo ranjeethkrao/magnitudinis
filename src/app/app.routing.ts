@@ -5,33 +5,36 @@ import { AuthLayoutComponent } from './layouts/auth/auth-layout.component';
 import { UsersComponent } from './users/users.component';
 
 export const AppRoutes: Routes = [
-    {
-      path: '',
-      redirectTo: 'dashboard',
-      pathMatch: 'full',
-    },
-    {
-      path: '',
-      component: AdminLayoutComponent,
-      children: [
-          {
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full',
+  },
+  {
+    path: '',
+    component: AdminLayoutComponent,
+    children: [
+      {
         path: '',
         loadChildren: './dashboard/dashboard.module#DashboardModule'
-    }, {
+      }, {
+        path: 'users',
+        loadChildren: './users/users.module#UsersModule'
+      }, {
         path: 'feed',
         loadChildren: './feed/feed.module#FeedModule'
     }]
-    },
-    {
+  },
+  {
+    path: '',
+    component: AuthLayoutComponent,
+    children: [{
       path: '',
-      component: AuthLayoutComponent,
-      children: [{
-        path: '',
-        loadChildren: './pages/pages.module#PagesModule'
-      }]
-    },
-    {
-      path: 'users',
-      loadChildren: './users/users.module#UsersModule'
-    
+      loadChildren: './pages/pages.module#PagesModule'
+    }]
+  },
+  {
+    path: 'users',
+    loadChildren: './users/users.module#UsersModule'
+
   }];
