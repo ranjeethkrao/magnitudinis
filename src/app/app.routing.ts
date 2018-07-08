@@ -17,10 +17,12 @@ export const AppRoutes: Routes = [
       {
         path: 'users',
         loadChildren: './users/users.module#UsersModule'
-      }, {
-        path: 'feed',
-        loadChildren: './feed/feed.module#FeedModule'
-      }, {
+      }
+      // , {
+      //   path: 'feed',
+      //   loadChildren: './feed/feed.module#FeedModule'
+      // }
+      , {
         path: '',
         loadChildren: './dashboard/dashboard.module#DashboardModule'
       }

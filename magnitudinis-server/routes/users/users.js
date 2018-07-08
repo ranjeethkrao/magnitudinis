@@ -1,3 +1,4 @@
+const async = require("async");
 const firebase = require('firebase-admin');
 const express = require('express');
 var bodyParser = require('body-parser');
@@ -55,64 +56,29 @@ app.get('/gusers', async (req, res) => {
   });
 });
 
-// updateUser() = function () {
-//   var ref = db.ref("users/" + update.uuid);
-//   ref.update({
-//     follows: update.newValue
-//   }).then(() => {
-//     console.log('update success')
-//   }).catch((err) => {
-//     console.log('Error updating ', err);
-//     success = false;
-//     failureCount++;
-//   });
-// }
-
 app.post('/changes', async (req, res) => {
-  let success = true;
-  let failureCount = 0;
   let updates = req.body.changes;
 
-  var batch = db.batch();
-  updates.map((update) => {
+
+  var updateUser = function (update, callback) {
     var ref = db.ref("users/" + update.uuid);
-    batch.update(ref, { follows: update.newValue});
-  });
-  
-  batch.commit().then(()=>{
-    console.log('update success');
-    res.send({ code: 0, message: 'Update successful' });
-  }).catch(err=>{
-    console.log('Error updating ', err);
-    res.send({ code: -1, message: 'Error updating ' + failureCount + ' records.' })
-  });
 
-  // let requests = updates.map((update) => {
-  //   return new Promise((resolve, reject) => {
-  //     var ref = db.ref("users/" + update.uuid);
-  //     ref.update({
-  //       follows: update.newValue
-  //     }).then(() => {
-  //       console.log('update success')
-  //       resolve();
-  //     }).catch((err) => {
-  //       console.log('Error updating ', err);
-  //       success = false;
-  //       failureCount++;
-  //       reject();
-  //     });
-  //   });
-  // });
+    ref.update({
+      follows: update.newValue
+    }).then(() => {
+      return callback();
+    }).catch((err) => {
+      return callback(err);
+    });
+  }
 
-  // console.log(requests.length);
-
-
-  // Promise.all(requests).then(() =>{    
-  //   success ? 
-  //     res.send({ code: 0, message: 'Update successful' }) 
-  //     : 
-  //     res.send({ code: -1, message: 'Error updating ' + failureCount + ' records.' })
-  // });
+  async.forEach(updates, updateUser, function (error) {
+    if (error) {
+      res.send({ code: -1, message: 'Error updating records.' })
+    } else {
+      res.send({ code: 0, message: 'Update successful' })
+    }
+  })
 });
 
 
